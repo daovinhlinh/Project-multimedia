@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="./css/filter.css" />
+        <title>Document</title>
+    </head>
+    <body>
+        <div id="filter-page">
+            <div class="container1">
+                <div class="container2 flex-col flex-sa">
+                    <div class="header-bar flex-sb">
+                        <img src="./img/fblogo.png" alt="" class="logo" />
+                        <div class="navigation flex-sa">
+                            <a href="/homepage.html" class="nav-btn">Home</a>
+                            <a href="/filter.html" class="nav-btn">Edit</a>
+                            <a href="/filter.html" class="nav-btn">Help</a>
+                            <a href="/about.html" class="nav-btn">About</a>
+                        </div>
+                    </div>
+                    <div class="container3 flex-col">
+                        <input
+                            type="file"
+                            accept="*image/*"
+                            id="fileinput"
+                            hidden
+                        />
+                        <label for="fileinput" class="actual-btn">Upload</label>
+                        <div id="img-container">
+                            <img
+                                src="https://www.chanchao.com.tw/VietnamWood/images/default.jpg"
+                                id="default-img"
+                                alt="Default img"
+                            />
+                            <div class="flex-col hidden" id="filter-bar">
+                                <label for="red">Red</label>
+                                <input
+                                    type="range"
+                                    id="red"
+                                    min="-255"
+                                    max="255"
+                                    value="0"
+                                />
+                                <label for="green">Green</label>
+                                <input
+                                    type="range"
+                                    id="green"
+                                    min="-255"
+                                    max="255"
+                                    value="0"
+                                />
+                                <label for="blue">Blue</label>
+                                <input
+                                    type="range"
+                                    id="blue"
+                                    min="-255"
+                                    max="255"
+                                    value="0"
+                                />
+                                <label for="contrast">Contrast</label>
+                                <input
+                                    type="range"
+                                    id="contrast"
+                                    min="-255"
+                                    max="255"
+                                    value="0"
+                                />
+                                <label for="brightness">Brightness</label>
+                                <input
+                                    type="range"
+                                    id="brightness"
+                                    min="-255"
+                                    max="255"
+                                    value="0"
+                                />
+                                <label for="grayscale">Grayscale</label>
+                                <input type="checkbox" id="grayscale" />
+                            </div>
+
+                            <canvas id="canvas"></canvas>
+                        </div>
+                        <a id="download" href="#" download="export.png"
+                            ><div class="actual-btn">Save</div></a
+                        >
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="./index.js"></script>
+    </body>
+</html>
