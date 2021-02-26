@@ -14,10 +14,10 @@
                     <div class="header-bar flex-sb">
                         <img src="./img/fblogo.png" alt="" class="logo" />
                         <div class="navigation flex-sa">
-                            <a href="/homepage.html" class="nav-btn">Home</a>
-                            <a href="/filter.html" class="nav-btn">Edit</a>
-                            <a href="/filter.html" class="nav-btn">Help</a>
-                            <a href="/about.html" class="nav-btn">About</a>
+                            <a href="homepage.html" class="nav-btn">Home</a>
+                            <a href="filter.html" class="nav-btn">Edit</a>
+                            <a href="filter.html" class="nav-btn">Help</a>
+                            <a href="about.html" class="nav-btn">About</a>
                         </div>
                     </div>
                     <div class="container3 flex-col">
@@ -75,8 +75,11 @@
                                     max="255"
                                     value="0"
                                 />
-                                <label for="grayscale">Grayscale</label>
-                                <input type="checkbox" id="grayscale" />
+                                <label class="checkbox-container"
+                                    >Grayscale
+                                    <span class="checkmark"></span>
+                                    <input type="checkbox" id="grayscale" />
+                                </label>
                             </div>
 
                             <canvas id="canvas"></canvas>
