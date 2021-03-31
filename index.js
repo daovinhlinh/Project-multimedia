@@ -11,17 +11,10 @@ const blue = document.getElementById("blue");
 const brightness = document.getElementById("brightness");
 const grayscale = document.getElementById("grayscale");
 const contrast = document.getElementById("contrast");
-
-//Check value thay đổi
-red.onchange = runPipeline;
-green.onchange = runPipeline;
-blue.onchange = runPipeline;
-brightness.onchange = runPipeline;
-contrast.onchange = runPipeline;
-grayscale.onchange = runPipeline;
+const swirl = document.getElementById("swirl");
 
 const imgSrc = new Image();
-let imgData, originalPixels, currentPixels;
+var imgData, originalPixels, currentPixels;
 
 fileInput.onchange = (e) => {
     if (e.target.files) {
@@ -59,6 +52,7 @@ const clamp = (value) => {
 const R_OFFSET = 0;
 const G_OFFSET = 1;
 const B_OFFSET = 2;
+const A_OFFSET = 3;
 
 const addRed = (x, y, value) => {
     const index = getIndex(x, y) + R_OFFSET;
@@ -105,20 +99,6 @@ const addContrast = (x, y, value) => {
     currentPixels[blueIndex] = clamp(newBlue);
 };
 
-// const addSaturation = (x, y, value) => {
-//     const redIndex = getIndex(x, y) + R_OFFSET;
-//     const greenIndex = getIndex(x, y) + G_OFFSET;
-//     const blueIndex = getIndex(x, y) + B_OFFSET;
-
-//     const redValue = currentPixels[redIndex];
-//     const greenValue = currentPixels[greenIndex];
-//     const blueValue = currentPixels[blueIndex];
-
-//     const newRed = alpha * (redValue - 128) + 128;
-//     const newGreen = alpha * (greenValue - 128) + 128;
-//     const newBlue = alpha * (blueValue - 128) + 128;
-// };
-
 const addGrayScale = (x, y) => {
     const redIndex = getIndex(x, y) + R_OFFSET;
     const greenIndex = getIndex(x, y) + G_OFFSET;
@@ -146,6 +126,17 @@ const commitChange = () => {
     ctx.putImageData(imgData, 0, 0, 0, 0, imgSrc.width, imgSrc.height);
 };
 
+//Check value thay đổi
+red.onchange = runPipeline;
+green.onchange = runPipeline;
+blue.onchange = runPipeline;
+brightness.onchange = runPipeline;
+contrast.onchange = runPipeline;
+grayscale.onchange = runPipeline;
+swirl.onchange = () => {
+    rotateImage(imgData, swirl.value);
+};
+
 function runPipeline() {
     currentPixels = originalPixels.slice();
 
@@ -159,8 +150,9 @@ function runPipeline() {
 
     for (let i = 0; i < imgSrc.height; i++) {
         for (let j = 0; j < imgSrc.width; j++) {
-            if (grayscaleFilter) addGrayScale(j, i);
-            else {
+            if (grayscaleFilter) {
+                addGrayScale(j, i);
+            } else {
                 addBrightness(j, i, brightnessFilter);
                 addContrast(j, i, contrastFilter);
                 addRed(j, i, redFilter);
@@ -170,4 +162,76 @@ function runPipeline() {
         }
     }
     commitChange();
+}
+
+function copyImageData(srcPixels, dstPixels, width, height) {
+    let i, j;
+    for (j = 0; j < height; j++) {
+        for (i = 0; i < width; i++) {
+            dstPixels[getIndex(i, j) + R_OFFSET] =
+                srcPixels[getIndex(i, j) + R_OFFSET];
+            dstPixels[getIndex(i, j) + G_OFFSET] =
+                srcPixels[getIndex(i, j) + G_OFFSET];
+            dstPixels[getIndex(i, j) + B_OFFSET] =
+                srcPixels[getIndex(i, j) + B_OFFSET];
+            dstPixels[getIndex(i, j) + A_OFFSET] =
+                srcPixels[getIndex(i, j) + A_OFFSET];
+        }
+    }
+}
+
+function checkInCircle(x, y, r) {
+    return x * x + y * y <= r * r;
+}
+
+function rotateImage(imgData, deg) {
+    let x, y, radius, size, centerX, centerY, sourcePosition, destPosition;
+    let transformedImageData = ctx.createImageData(
+        imgData.width,
+        imgData.height
+    );
+
+    let originalPixels = imgData.data;
+    let transformedPixels = transformedImageData.data;
+    let r, alpha;
+    let newX, newY;
+    let degree;
+    let { width, height } = imgData;
+
+    size = width < height ? width : height;
+    radius = Math.floor(size / 2);
+    centerX = Math.floor(width / 2);
+    centerY = Math.floor(height / 2);
+
+    copyImageData(originalPixels, transformedPixels, width, height);
+
+    for (y = -radius; y < radius; y++) {
+        for (x = -radius; x < radius; x++) {
+            if (checkInCircle(x, y, radius)) {
+                destPosition = (y + centerY) * width + x + centerX;
+                destPosition *= 4;
+                r = Math.sqrt(x * x + y * y);
+                alpha = Math.atan2(y, x);
+                degree = (alpha * 180.0) / Math.PI;
+
+                degree += (r * deg) / 1.5;
+                alpha = (degree * Math.PI) / 180.0;
+                newY = Math.floor(r * Math.sin(alpha));
+                newX = Math.floor(r * Math.cos(alpha));
+
+                sourcePosition = (newY + centerY) * width + newX + centerX;
+                sourcePosition *= 4;
+
+                transformedPixels[destPosition + R_OFFSET] =
+                    originalPixels[sourcePosition + R_OFFSET];
+                transformedPixels[destPosition + G_OFFSET] =
+                    originalPixels[sourcePosition + G_OFFSET];
+                transformedPixels[destPosition + B_OFFSET] =
+                    originalPixels[sourcePosition + B_OFFSET];
+                transformedPixels[destPosition + A_OFFSET] =
+                    originalPixels[sourcePosition + A_OFFSET];
+            }
+        }
+    }
+    ctx.putImageData(transformedImageData, 0, 0);
 }

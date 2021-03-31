@@ -54,12 +54,37 @@ body {
 }
 
 .container3 {
-    width: 50vw;
+    width: 85vw;
     height: 75vh;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
+    overflow-y: scroll;
+}
+
+/* Srollbar */
+/* width */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-track:hover {
+    background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: transparent;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
 }
 
 a:visited {
@@ -111,4 +136,43 @@ h1 {
 .nav-btn:hover {
     color: white;
     border-bottom: 2px solid #f85bd6;
+}
+
+.user {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.flex-col {
+    display: flex;
+    flex-direction: column;
+}
+
+.flex-sb {
+    display: flex;
+    justify-content: space-between;
+}
+
+.flex-sa {
+    display: flex;
+    justify-content: space-around;
+}
+
+.flex-ct {
+    display: flex;
+    justify-content: center;
+}
+
+.flex-row {
+    display: flex;
+    flex-direction: row;
+}
+
+.mb-3 {
+    margin-bottom: 3em;
+}
+
+.info-container {
+    width: 65vw;
 }

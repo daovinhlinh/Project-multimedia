@@ -13,6 +13,11 @@ html {
     align-items: center;
 }
 
+* {
+    margin: 0;
+    padding: 0;
+}
+
 body {
     color: white;
     font-size: 18px;
@@ -24,6 +29,7 @@ body {
 #landing-img {
     width: 750px;
     height: auto;
+    animation: scaleTransfrom 1s ease-out
 }
 
 .container1 {
@@ -42,7 +48,6 @@ body {
     width: 90vw;
     height: 90vh;
     background: rgba(48, 6, 90, 0.788);
-
     background: linear-gradient(
         135deg,
         rgba(45, 10, 78, 0.7) 0%,
@@ -50,55 +55,28 @@ body {
         rgba(100, 34, 175, 0.5) 100%
     );
     border-radius: 30px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
     -webkit-box-shadow: 9px 6px 44px -4px rgba(0, 0, 0, 0.75);
     -moz-box-shadow: 9px 6px 44px -4px rgba(0, 0, 0, 0.75);
     box-shadow: 9px 6px 44px -4px rgba(0, 0, 0, 0.75);
 }
 .container3 {
-    display: flex;
     width: 90vw;
-    justify-content: space-between;
+    align-items: center;
 }
 
 .container4 {
     margin-left: 80px;
-    width: 30vw;
+    width: 28vw;
     height: 55vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+    backface-visibility: hidden;
 }
 
 .nav-bar {
-    display: flex;
     width: 25rem;
-    justify-content: space-between;
-    /* margin-top: 2rem; */
 }
 
-.btn {
-    width: 10rem;
-    height: 1.75rem;
-    border-color: #ca10a1;
-    background-color: transparent;
-    text-decoration: none;
-    border-radius: 20px;
-    color: white;
-    -webkit-box-shadow: 28px 21px 27px -13px rgba(54, 54, 54, 1);
-    -moz-box-shadow: 28px 21px 27px -13px rgba(54, 54, 54, 1);
-    box-shadow: 28px 21px 27px -13px rgba(54, 54, 54, 1);
-}
-
-a:visited {
-    color: white;
-}
-
-.btn:hover {
-    background-color: #ca10a1;
+.content {
+    width: 25rem;
 }
 
 a {
@@ -122,16 +100,12 @@ h1 {
 }
 
 .header-bar {
-    justify-content: space-between;
-    display: flex;
     width: 80vw;
 }
 
 .navigation {
     width: 40vw;
     align-items: center;
-    display: flex;
-    justify-content: space-around;
 }
 
 .nav-btn {
@@ -142,4 +116,141 @@ h1 {
 .nav-btn:hover {
     color: white;
     border-bottom: 2px solid #f85bd6;
+}
+
+.flex-col {
+    display: flex;
+    flex-direction: column;
+}
+
+.flex-sb {
+    display: flex;
+    justify-content: space-between;
+}
+
+.flex-sa {
+    display: flex;
+    justify-content: space-around;
+}
+
+.flex-ct {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.flex-col-ct {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.heading {
+    animation: moveFromLeft 0.5s ease-out;
+    margin-bottom: 10px;
+}
+
+.paragraph {
+    animation: moveFromRight 0.5s ease-out;
+}
+
+@keyframes moveFromLeft {
+    0% {
+        opacity: 0;
+        transform: translateX(-100px);
+    }
+
+    80% {
+        transform: translateX(5px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes moveFromRight {
+    0% {
+        opacity: 0;
+        transform: translateX(100px);
+    }
+
+    80% {
+        transform: translateX(-5px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes moveFromBottom {
+    0% {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes scaleTransfrom {
+    0% {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1)
+    }
+}
+
+/* Button */
+.btn:visited,
+.btn:link {
+    color: white;
+    text-decoration: none;
+    padding: 10px 20px;
+    background-color: #ca10a1;
+    border-radius: 50px;
+    transition: all 0.2s;
+    position: relative;
+}
+
+.btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+.btn:active {
+    transform: translateY(-1px);
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.3);
+}
+
+.btn::after {
+    content: "";
+    display: inline-block;
+    height: 100%;
+    weight: 100%;
+    border-radius: 50px;
+    position: absolute;
+    z-index: -1;
+    top: 0;
+    left: 0;
+    transition: all 0.2s;
+}
+
+.btn-animated {
+    animation: moveFromBottom 0.5s ease-out 0.7s;
+    animation-fill-mode: backwards;
+}
+
+.navbar-animated {
+    animation: moveFromBottom 0.3s ease-out;
+    animation-fill-mode: backwards;
 }

@@ -5,7 +5,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="stylesheet" href="./css/filter.css" />
-        <title>Document</title>
+        <title>Filter</title>
     </head>
     <body>
         <div id="filter-page">
@@ -28,7 +28,7 @@
                             hidden
                         />
                         <label for="fileinput" class="actual-btn">Upload</label>
-                        <div id="img-container">
+                        <div id="img-container" class="flex-sa">
                             <img
                                 src="https://www.chanchao.com.tw/VietnamWood/images/default.jpg"
                                 id="default-img"
@@ -75,9 +75,18 @@
                                     max="255"
                                     value="0"
                                 />
+                                <label for="swirl">Swirl </label>
+                                <input
+                                    type="range"
+                                    id="swirl"
+                                    min="-10"
+                                    max="10"
+                                    value="0"
+                                    step="0.5"
+                                />
                                 <label class="checkbox-container"
                                     >Grayscale
-                                    <span class="checkmark"></span>
+                                    <!-- <span class="checkmark"></span> -->
                                     <input type="checkbox" id="grayscale" />
                                 </label>
                             </div>
