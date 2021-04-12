@@ -3,6 +3,7 @@ const download = document.getElementById("download");
 const canvas = document.getElementById("canvas");
 const filter = document.getElementById("filter-bar");
 const defaultImg = document.getElementById("default-img");
+const resetImg = document.getElementById("reset-img");
 const ctx = canvas.getContext("2d");
 
 const red = document.getElementById("red");
@@ -11,6 +12,7 @@ const blue = document.getElementById("blue");
 const brightness = document.getElementById("brightness");
 const grayscale = document.getElementById("grayscale");
 const contrast = document.getElementById("contrast");
+const threshold = document.getElementById("threshold");
 const swirl = document.getElementById("swirl");
 
 const imgSrc = new Image();
@@ -28,8 +30,12 @@ download.addEventListener("click", (e) => {
     download.href = dataURL;
 });
 
+resetImg.addEventListener("click", (e) => {
+    resetChange();
+});
+
 imgSrc.onload = () => {
-    filter.classList.remove("hide");
+    // filter.classList.remove("hide");
     defaultImg.src = imgSrc.src;
     canvas.width = imgSrc.width;
     canvas.height = imgSrc.height;
@@ -39,7 +45,7 @@ imgSrc.onload = () => {
 
     //Giả sử ảnh 2x2 thì array sẽ có dạng [128, 255, 0, 255, 186, 182, 200, 255, 186, 255, 255, 255, 127, 60, 20, 128]
     // 8 value đầu sẽ của 2 pixels dòng đầu và 8 value cuối sẽ của 2 pixels dòng 2
-    //1 pixel chiếm 4 value lần lượt là: red, green, blue, alpha channel giá trị từ 0-255
+    //1 pixel chiếm 4 value lần lượt là: red, green, blue, alpha và có giá trị từ 0-255
 };
 
 const getIndex = (x, y) => (x + y * imgSrc.width) * 4; //get index of pixel
@@ -108,20 +114,47 @@ const addGrayScale = (x, y) => {
     const greenValue = currentPixels[greenIndex];
     const blueValue = currentPixels[blueIndex];
 
-    const newRed = redValue * 0.3;
-    const newGreen = greenValue * 0.59;
-    const newBlue = blueValue * 0.11;
+    const newRed = redValue * 0.2126; //0,3
+    const newGreen = greenValue * 0.7152; //0.59
+    const newBlue = blueValue * 0.0722; //0.11
 
     const grayscaleValue = newRed + newGreen + newBlue;
 
-    currentPixels[redIndex] = clamp(grayscaleValue);
-    currentPixels[greenIndex] = clamp(grayscaleValue);
-    currentPixels[blueIndex] = clamp(grayscaleValue);
+    currentPixels[redIndex] = currentPixels[greenIndex] = currentPixels[
+        blueIndex
+    ] = clamp(grayscaleValue);
+};
+
+const addThreshold = (x, y, value) => {
+    const redIndex = getIndex(x, y) + R_OFFSET;
+    const greenIndex = getIndex(x, y) + G_OFFSET;
+    const blueIndex = getIndex(x, y) + B_OFFSET;
+
+    const redValue = currentPixels[redIndex];
+    const greenValue = currentPixels[greenIndex];
+    const blueValue = currentPixels[blueIndex];
+
+    const newRed = redValue * 0.2126; //0,3
+    const newGreen = greenValue * 0.7152; //0.59
+    const newBlue = blueValue * 0.0722; //0.11
+
+    const thresholdValue = newRed + newGreen + newBlue >= value ? 255 : 0;
+
+    currentPixels[redIndex] = currentPixels[greenIndex] = currentPixels[
+        blueIndex
+    ] = clamp(thresholdValue);
 };
 
 const commitChange = () => {
     for (let i = 0; i < imgData.data.length; i++) {
         imgData.data[i] = currentPixels[i];
+    }
+    ctx.putImageData(imgData, 0, 0, 0, 0, imgSrc.width, imgSrc.height);
+};
+
+const resetChange = () => {
+    for (let i = 0; i < imgData.data.length; i++) {
+        imgData.data[i] = originalPixels[i];
     }
     ctx.putImageData(imgData, 0, 0, 0, 0, imgSrc.width, imgSrc.height);
 };
@@ -133,6 +166,7 @@ blue.onchange = runPipeline;
 brightness.onchange = runPipeline;
 contrast.onchange = runPipeline;
 grayscale.onchange = runPipeline;
+threshold.onchange = runPipeline;
 swirl.onchange = () => {
     rotateImage(imgData, swirl.value);
 };
@@ -146,12 +180,15 @@ function runPipeline() {
     const blueFilter = Number(blue.value);
     const brightnessFilter = Number(brightness.value);
     const contrastFilter = Number(contrast.value);
+    const thresholdFilter = Number(threshold.value);
     const grayscaleFilter = grayscale.checked;
 
     for (let i = 0; i < imgSrc.height; i++) {
         for (let j = 0; j < imgSrc.width; j++) {
             if (grayscaleFilter) {
                 addGrayScale(j, i);
+            } else if (thresholdFilter) {
+                addThreshold(j, i, thresholdFilter);
             } else {
                 addBrightness(j, i, brightnessFilter);
                 addContrast(j, i, contrastFilter);
@@ -212,26 +249,61 @@ function rotateImage(imgData, deg) {
                 destPosition *= 4;
                 r = Math.sqrt(x * x + y * y);
                 alpha = Math.atan2(y, x);
+
+                //Transform alpha to degree
                 degree = (alpha * 180.0) / Math.PI;
 
                 degree += (r * deg) / 1.5;
                 alpha = (degree * Math.PI) / 180.0;
-                newY = Math.floor(r * Math.sin(alpha));
-                newX = Math.floor(r * Math.cos(alpha));
+                newX = r * Math.cos(alpha);
+                newY = r * Math.sin(alpha);
 
-                sourcePosition = (newY + centerY) * width + newX + centerX;
-                sourcePosition *= 4;
+                x0 = Math.floor(newX);
+                xf = x0 + 1;
+                y0 = Math.floor(newY);
+                yf = y0 + 1;
+                deltaX = newX - x0;
+                deltaY = newY - y0;
 
-                transformedPixels[destPosition + R_OFFSET] =
-                    originalPixels[sourcePosition + R_OFFSET];
-                transformedPixels[destPosition + G_OFFSET] =
-                    originalPixels[sourcePosition + G_OFFSET];
-                transformedPixels[destPosition + B_OFFSET] =
-                    originalPixels[sourcePosition + B_OFFSET];
-                transformedPixels[destPosition + A_OFFSET] =
-                    originalPixels[sourcePosition + A_OFFSET];
+                pos0 = ((y0 + centerY) * width + x0 + centerX) * 4; //(x,y)
+                pos1 = ((y0 + centerY) * width + xf + centerX) * 4; //(x+1,y)
+                pos2 = ((yf + centerY) * width + x0 + centerX) * 4; //(x,y+1)
+                pos3 = ((yf + centerY) * width + xf + centerX) * 4; //(x+1,y+1)
+
+                // sourcePosition = (newY + centerY) * width + newX + centerX;
+                // sourcePosition *= 4;
+
+                for (k = 0; k < 4; k++) {
+                    componentX0 =
+                        (originalPixels[pos1 + k] - originalPixels[pos0 + k]) *
+                            deltaX +
+                        originalPixels[pos0 + k];
+                    componentX1 =
+                        (originalPixels[pos3 + k] - originalPixels[pos2 + k]) *
+                            deltaX +
+                        originalPixels[pos2 + k];
+                    finalPixelComponent =
+                        (componentX1 - componentX0) * deltaY + componentX0;
+                    transformedPixels[destPosition + k] =
+                        finalPixelComponent > 255
+                            ? 255
+                            : finalPixelComponent < 0
+                            ? 0
+                            : finalPixelComponent;
+                }
+
+                // transformedPixels[destPosition + R_OFFSET] =
+                //     originalPixels[sourcePosition + R_OFFSET];
+                // transformedPixels[destPosition + G_OFFSET] =
+                //     originalPixels[sourcePosition + G_OFFSET];
+                // transformedPixels[destPosition + B_OFFSET] =
+                //     originalPixels[sourcePosition + B_OFFSET];
+                // transformedPixels[destPosition + A_OFFSET] =
+                //     originalPixels[sourcePosition + A_OFFSET];
             }
         }
     }
     ctx.putImageData(transformedImageData, 0, 0);
 }
+
+// function sharpen(ctx, width, height, mix) {}
