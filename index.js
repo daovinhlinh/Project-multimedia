@@ -2,6 +2,7 @@ const fileInput = document.getElementById("fileinput");
 const download = document.getElementById("download");
 const canvas = document.getElementById("canvas");
 const filter = document.getElementById("filter-bar");
+const tab = document.getElementsByClassName("tab")[0];
 const defaultImg = document.getElementById("default-img");
 const resetImg = document.getElementById("reset-img");
 const ctx = canvas.getContext("2d");
@@ -22,14 +23,17 @@ fileInput.onchange = (e) => {
     if (e.target.files) {
         imgSrc.src = URL.createObjectURL(e.target.files[0]); //create blob url
         filter.classList.remove("hidden");
+        tab.classList.remove("hidden");
     }
 };
 
+//Download
 download.addEventListener("click", (e) => {
     let dataURL = canvas.toDataURL();
     download.href = dataURL;
 });
 
+//Undo change to image
 resetImg.addEventListener("click", (e) => {
     resetChange();
 });
@@ -47,6 +51,22 @@ imgSrc.onload = () => {
     // 8 value đầu sẽ của 2 pixels dòng đầu và 8 value cuối sẽ của 2 pixels dòng 2
     //1 pixel chiếm 4 value lần lượt là: red, green, blue, alpha và có giá trị từ 0-255
 };
+
+function openTab(event, tabName) {
+    let i, tabcontents, tablinks;
+    tabcontents = document.getElementsByClassName("tabContent");
+    for (i = 0; i < tabcontents.length; i++) {
+        tabcontents[i].style.display = "none";
+    }
+
+    tablinks = document.getElementsByClassName("tablink");
+    for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+
+    document.getElementById(tabName).style.display = "flex";
+    event.currentTarget.className += " active";
+}
 
 const getIndex = (x, y) => (x + y * imgSrc.width) * 4; //get index of pixel
 
@@ -120,9 +140,10 @@ const addGrayScale = (x, y) => {
 
     const grayscaleValue = newRed + newGreen + newBlue;
 
-    currentPixels[redIndex] = currentPixels[greenIndex] = currentPixels[
-        blueIndex
-    ] = clamp(grayscaleValue);
+    currentPixels[redIndex] =
+        currentPixels[greenIndex] =
+        currentPixels[blueIndex] =
+            clamp(grayscaleValue);
 };
 
 const addThreshold = (x, y, value) => {
@@ -134,15 +155,16 @@ const addThreshold = (x, y, value) => {
     const greenValue = currentPixels[greenIndex];
     const blueValue = currentPixels[blueIndex];
 
-    const newRed = redValue * 0.2126; //0,3
-    const newGreen = greenValue * 0.7152; //0.59
-    const newBlue = blueValue * 0.0722; //0.11
+    const newRed = redValue * 0.2126;
+    const newGreen = greenValue * 0.7152;
+    const newBlue = blueValue * 0.0722;
 
     const thresholdValue = newRed + newGreen + newBlue >= value ? 255 : 0;
 
-    currentPixels[redIndex] = currentPixels[greenIndex] = currentPixels[
-        blueIndex
-    ] = clamp(thresholdValue);
+    currentPixels[redIndex] =
+        currentPixels[greenIndex] =
+        currentPixels[blueIndex] =
+            clamp(thresholdValue);
 };
 
 const commitChange = () => {
@@ -156,6 +178,14 @@ const resetChange = () => {
     for (let i = 0; i < imgData.data.length; i++) {
         imgData.data[i] = originalPixels[i];
     }
+    red.value = 0;
+    green.value = 0;
+    blue.value = 0;
+    brightness.value = 0;
+    contrast.value = 0;
+    grayscale.checked = false;
+    threshold.value = 0;
+    swirl.value = 0;
     ctx.putImageData(imgData, 0, 0, 0, 0, imgSrc.width, imgSrc.height);
 };
 
@@ -167,39 +197,7 @@ brightness.onchange = runPipeline;
 contrast.onchange = runPipeline;
 grayscale.onchange = runPipeline;
 threshold.onchange = runPipeline;
-swirl.onchange = () => {
-    rotateImage(imgData, swirl.value);
-};
-
-function runPipeline() {
-    currentPixels = originalPixels.slice();
-
-    //get change value
-    const redFilter = Number(red.value);
-    const greenFilter = Number(green.value);
-    const blueFilter = Number(blue.value);
-    const brightnessFilter = Number(brightness.value);
-    const contrastFilter = Number(contrast.value);
-    const thresholdFilter = Number(threshold.value);
-    const grayscaleFilter = grayscale.checked;
-
-    for (let i = 0; i < imgSrc.height; i++) {
-        for (let j = 0; j < imgSrc.width; j++) {
-            if (grayscaleFilter) {
-                addGrayScale(j, i);
-            } else if (thresholdFilter) {
-                addThreshold(j, i, thresholdFilter);
-            } else {
-                addBrightness(j, i, brightnessFilter);
-                addContrast(j, i, contrastFilter);
-                addRed(j, i, redFilter);
-                addGreen(j, i, greenFilter);
-                addBlue(j, i, blueFilter);
-            }
-        }
-    }
-    commitChange();
-}
+swirl.onchange = () => rotateImage(imgData, swirl.value);
 
 function copyImageData(srcPixels, dstPixels, width, height) {
     let i, j;
@@ -270,9 +268,6 @@ function rotateImage(imgData, deg) {
                 pos2 = ((yf + centerY) * width + x0 + centerX) * 4; //(x,y+1)
                 pos3 = ((yf + centerY) * width + xf + centerX) * 4; //(x+1,y+1)
 
-                // sourcePosition = (newY + centerY) * width + newX + centerX;
-                // sourcePosition *= 4;
-
                 for (k = 0; k < 4; k++) {
                     componentX0 =
                         (originalPixels[pos1 + k] - originalPixels[pos0 + k]) *
@@ -291,19 +286,44 @@ function rotateImage(imgData, deg) {
                             ? 0
                             : finalPixelComponent;
                 }
-
-                // transformedPixels[destPosition + R_OFFSET] =
-                //     originalPixels[sourcePosition + R_OFFSET];
-                // transformedPixels[destPosition + G_OFFSET] =
-                //     originalPixels[sourcePosition + G_OFFSET];
-                // transformedPixels[destPosition + B_OFFSET] =
-                //     originalPixels[sourcePosition + B_OFFSET];
-                // transformedPixels[destPosition + A_OFFSET] =
-                //     originalPixels[sourcePosition + A_OFFSET];
             }
         }
     }
+
     ctx.putImageData(transformedImageData, 0, 0);
 }
 
-// function sharpen(ctx, width, height, mix) {}
+function runPipeline() {
+    currentPixels = originalPixels.slice();
+
+    //get change value
+    const redFilter = Number(red.value);
+    const greenFilter = Number(green.value);
+    const blueFilter = Number(blue.value);
+    const brightnessFilter = Number(brightness.value);
+    const contrastFilter = Number(contrast.value);
+    const thresholdFilter = Number(threshold.value);
+    const grayscaleFilter = grayscale.checked;
+
+    for (let i = 0; i < imgSrc.height; i++) {
+        for (let j = 0; j < imgSrc.width; j++) {
+            if (grayscaleFilter) {
+                addGrayScale(j, i);
+            } else if (thresholdFilter) {
+                addThreshold(j, i, thresholdFilter);
+                addBrightness(j, i, brightnessFilter);
+                addContrast(j, i, contrastFilter);
+                addRed(j, i, redFilter);
+                addGreen(j, i, greenFilter);
+                addBlue(j, i, blueFilter);
+            } else {
+                addBrightness(j, i, brightnessFilter);
+                addContrast(j, i, contrastFilter);
+                addRed(j, i, redFilter);
+                addGreen(j, i, greenFilter);
+                addBlue(j, i, blueFilter);
+            }
+        }
+    }
+    commitChange();
+}

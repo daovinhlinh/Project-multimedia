@@ -101,6 +101,42 @@ body {
     width: fit-content;
 }
 
+.btn-container {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+/* Tab */
+.tab {
+    overflow: hidden;
+    background-color: #fff;
+}
+
+.tab button {
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 10px 14px;
+    transition: 0.3s;
+}
+
+.tab button:hover {
+    background-color: #ddd;
+}
+
+.tab button:active {
+    background-color: #ccc;
+}
+
+.tabContent {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+}
+
 /* Slider */
 input[type="range"] {
     outline: 0;
