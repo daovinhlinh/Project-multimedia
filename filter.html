@@ -1,146 +1,129 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="stylesheet" href="./css/filter.css" />
-        <title>Filter</title>
-    </head>
-    <body>
-        <div id="filter-page">
-            <div class="container1">
-                <div class="container2 flex-col flex-sa">
-                    <div class="header-bar flex-sb">
-                        <img src="./img/fblogo.png" alt="" class="logo" />
-                        <div class="navigation flex-sa">
-                            <a href="homepage.html" class="nav-btn">Home</a>
-                            <a href="filter.html" class="nav-btn">Edit</a>
-                            <a href="filter.html" class="nav-btn">Help</a>
-                            <a href="about.html" class="nav-btn">About</a>
-                        </div>
-                    </div>
-                    <div class="container3 flex-col">
-                        <input
-                            type="file"
-                            accept="*image/*"
-                            id="fileinput"
-                            hidden
-                        />
-                        <label for="fileinput" class="actual-btn">Upload</label>
-                        <div class="tab hidden">
-                            <button
-                                class="tablink"
-                                onclick="openTab(event, 'tab1')"
-                            >
-                                Tab 1
-                            </button>
-                            <button
-                                class="tablink"
-                                onclick="openTab(event, 'tab2')"
-                            >
-                                Tab 2
-                            </button>
-                            <button
-                                class="tablink"
-                                onclick="openTab(event, 'tab3')"
-                            >
-                                Tab 3
-                            </button>
-                        </div>
-                        <div id="img-container" class="flex-sa">
-                            <img
-                                src="https://www.chanchao.com.tw/VietnamWood/images/default.jpg"
-                                id="default-img"
-                                alt="Default img"
-                            />
-                            <div class="flex-col hidden" id="filter-bar">
-                                <div id="tab1" class="tabContent">
-                                    <label for="red">Red</label>
-                                    <input
-                                        type="range"
-                                        id="red"
-                                        min="-255"
-                                        max="255"
-                                        value="0"
-                                    />
-                                    <label for="green">Green</label>
-                                    <input
-                                        type="range"
-                                        id="green"
-                                        min="-255"
-                                        max="255"
-                                        value="0"
-                                    />
-                                    <label for="blue">Blue</label>
-                                    <input
-                                        type="range"
-                                        id="blue"
-                                        min="-255"
-                                        max="255"
-                                        value="0"
-                                    />
-                                </div>
-                                <div id="tab2" class="tabContent">
-                                    <label for="contrast">Contrast</label>
-                                    <input
-                                        type="range"
-                                        id="contrast"
-                                        min="-255"
-                                        max="255"
-                                        value="0"
-                                    />
-                                    <label for="brightness">Brightness</label>
-                                    <input
-                                        type="range"
-                                        id="brightness"
-                                        min="-255"
-                                        max="255"
-                                        value="0"
-                                    />
-                                </div>
-                                <div id="tab3" class="tabContent">
-                                    <label for="threshold">Threshold</label>
-                                    <input
-                                        type="range"
-                                        id="threshold"
-                                        min="0"
-                                        max="255"
-                                        value="0"
-                                    />
-                                    <label for="swirl">Swirl</label>
-                                    <input
-                                        type="range"
-                                        id="swirl"
-                                        min="-10"
-                                        max="10"
-                                        value="0"
-                                        step="0.5"
-                                    />
-                                    <label class="checkbox-container"
-                                        >Grayscale
-                                        <!-- <span class="checkmark"></span> -->
-                                        <input type="checkbox" id="grayscale" />
-                                    </label>
-                                </div>
-                            </div>
-
-                            <canvas id="canvas"></canvas>
-                        </div>
-                        <div class="btn-container">
-                            <a id="download" href="#" download="export.png"
-                                ><div class="actual-btn">Save</div></a
-                            >
-                            <a id="download" href="#">
-                                <div id="reset-img" class="actual-btn">
-                                    Reset Img
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-                </div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./css/filter.css" />
+    <title>Filter</title>
+  </head>
+  <body>
+    <div id="filter-page">
+      <div class="container1">
+        <div class="container2 flex-col flex-sa">
+          <!-- <div class="header-bar flex-sb">
+            <img src="./img/logo.png" alt="" class="logo" /> -->
+          <div class="navigation flex-sb">
+            <a href="homepage.html" class="nav-btn">Home</a>
+            <a href="filter.html" class="nav-btn">Edit</a>
+            <a href="handwriting.html" class="nav-btn">Hand Writing</a>
+            <a href="about.html" class="nav-btn">About</a>
+          </div>
+          <!-- </div> -->
+          <div class="container3 flex-col">
+            <input type="file" accept="*image/*" id="fileinput" hidden />
+            <label for="fileinput" class="actual-btn">Upload</label>
+            <div class="tab hidden">
+              <button class="tablink" onclick="openTab(event, 'tab1')">
+                Color
+              </button>
+              <button class="tablink" onclick="openTab(event, 'tab2')">
+                Tab 2
+              </button>
+              <button class="tablink" onclick="openTab(event, 'tab3')">
+                Effect
+              </button>
             </div>
+            <div id="img-container" class="flex-sa">
+              <img
+                src="https://www.chanchao.com.tw/VietnamWood/images/default.jpg"
+                id="default-img"
+                alt="Default img"
+              />
+              <div class="flex-col hidden" id="filter-bar">
+                <div id="tab1" class="tabContent">
+                  <label for="red">Red</label>
+                  <input type="range" id="red" min="-255" max="255" value="0" />
+                  <label for="green">Green</label>
+                  <input
+                    type="range"
+                    id="green"
+                    min="-255"
+                    max="255"
+                    value="0"
+                  />
+                  <label for="blue">Blue</label>
+                  <input
+                    type="range"
+                    id="blue"
+                    min="-255"
+                    max="255"
+                    value="0"
+                  />
+                </div>
+                <div id="tab2" class="tabContent">
+                  <label for="contrast">Contrast</label>
+                  <input
+                    type="range"
+                    id="contrast"
+                    min="-255"
+                    max="255"
+                    value="0"
+                  />
+                  <label for="brightness">Brightness</label>
+                  <input
+                    type="range"
+                    id="brightness"
+                    min="-255"
+                    max="255"
+                    value="0"
+                  />
+                  <label for="sharpen">Sharpen</label>
+                  <input type="range" id="sharpen" min="0" max="1" value="0" />
+                </div>
+                <div id="tab3" class="tabContent">
+                  <label for="threshold">Threshold</label>
+                  <input
+                    type="range"
+                    id="threshold"
+                    min="0"
+                    max="255"
+                    value="0"
+                  />
+                  <label for="swirl">Swirl</label>
+                  <input
+                    type="range"
+                    id="swirl"
+                    min="-10"
+                    max="10"
+                    value="0"
+                    step="1"
+                  />
+                  <label class="checkbox-container"
+                    >Grayscale
+                    <input type="checkbox" id="grayscale" />
+                  </label>
+                  <label class="checkbox-container"
+                    >Remove green
+                    <input type="checkbox" id="keygreen" />
+                  </label>
+                </div>
+              </div>
+
+              <canvas id="canvas"></canvas>
+            </div>
+            <div class="btn-container">
+              <a id="download" href="#" download="export.png"
+                ><div class="actual-btn">Save</div></a
+              >
+              <a id="download" href="#">
+                <div id="reset-img" class="actual-btn">Reset Img</div>
+              </a>
+            </div>
+          </div>
         </div>
-        <script src="./index.js"></script>
-    </body>
+      </div>
+    </div>
+    <script src="./index.js"></script>
+  </body>
 </html>
